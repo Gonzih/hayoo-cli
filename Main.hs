@@ -31,6 +31,7 @@ data HayooResponse = HayooResponse { max    :: Int
 
 instance FromJSON HayooResult where
     parseJSON (Object v) = HayooResult
+                           <$> v .: "resultUri"
                            <$> v .: "tag"
                            <*> v .: "resultPackage"
                            <*> v .: "resultName"
@@ -69,7 +70,7 @@ decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
 decodeHayooResponse = decode
 
 printResult :: HayooResult -> IO ()
-printResult (HayooResult _ _ _ _ desc _ _ _ _) = putStrLn $ writeAsciiDoc $ readHtml desc
+printResult (HayooResult _ _ _ _ _ desc _ _ _ _) = putStrLn $ writeAsciiDoc $ readHtml desc
 
 printResponse :: HayooResponse -> IO ()
 printResponse (HayooResponse _ _ _ results) = sequence $ map printResult results
