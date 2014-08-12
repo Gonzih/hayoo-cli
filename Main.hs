@@ -22,7 +22,7 @@ data HayooResult = HayooResult { resultUri         :: String
                                , resultModules     :: [String]
                                , resultScore       :: Float
                                , resultType        :: String
-                            } deriving (Show)
+                               } deriving (Show)
 
 data HayooResponse = HayooResponse { max    :: Int
                                    , offset :: Int
