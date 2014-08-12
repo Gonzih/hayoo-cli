@@ -9,7 +9,8 @@ import System.IO (stderr, hPutStrLn, hPrint)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Network.HTTP.Conduit
-import Text.Pandoc (readHtml, writeAsciiDoc)
+import Text.Pandoc (def, readHtml, writeAsciiDoc)
+import Text.Pandoc.Options (ReaderOptions(..), WriterOptions(..))
 
 data HayooResult = HayooResult { resultUri         :: String
                                , tag               :: String
@@ -69,11 +70,14 @@ jsonData = simpleHttp "http://hayoo.fh-wedel.de/json?query=Monad" `catch` status
 decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
 decodeHayooResponse = decode
 
+htmlToAscii :: String -> String
+htmlToAscii = (writeAsciiDoc def {writerReferenceLinks = True}) . readHtml def
+
 printResult :: HayooResult -> IO ()
-printResult (HayooResult _ _ _ _ _ desc _ _ _ _) = putStrLn $ writeAsciiDoc $ readHtml desc
+printResult (HayooResult _ _ _ _ _ desc _ _ _ _) = putStrLn $ htmlToAscii desc
 
 printResponse :: HayooResponse -> IO ()
-printResponse (HayooResponse _ _ _ results) = sequence $ map printResult results
+printResponse (HayooResponse _ _ _ results) = mapM_ printResult results
 
 main :: IO ()
 main = printResponse =<< decodeHayooResponse =<< jsonData
