@@ -75,6 +75,5 @@ printResult (HayooResult _ _ _ _ _ desc _ _ _ _) = putStrLn $ writeAsciiDoc $ re
 printResponse :: HayooResponse -> IO ()
 printResponse (HayooResponse _ _ _ results) = sequence $ map printResult results
 
-
 main :: IO ()
 main = printResponse =<< decodeHayooResponse =<< jsonData
