@@ -33,7 +33,7 @@ data HayooResponse = HayooResponse { max    :: Int
 instance FromJSON HayooResult where
     parseJSON (Object v) = HayooResult
                            <$> v .: "resultUri"
-                           <$> v .: "tag"
+                           <*> v .: "tag"
                            <*> v .: "resultPackage"
                            <*> v .: "resultName"
                            <*> v .: "resultSource"
