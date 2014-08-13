@@ -7,6 +7,7 @@ import Control.Monad (mzero)
 import Control.Exception (catch)
 import System.IO (stderr, hPutStrLn, hPrint)
 import qualified Data.ByteString.Lazy as BSL
+import qualified Data.Foldable as F
 import Data.Aeson
 import Network.HTTP.Conduit
 import Text.Pandoc (def, readHtml, writeAsciiDoc)
@@ -80,4 +81,4 @@ printResponse :: HayooResponse -> IO ()
 printResponse (HayooResponse _ _ _ results) = mapM_ printResult results
 
 main :: IO ()
-main = printResponse =<< decodeHayooResponse =<< jsonData
+main = (F.mapM_ printResponse) =<< (return . decodeHayooResponse) =<< jsonData
