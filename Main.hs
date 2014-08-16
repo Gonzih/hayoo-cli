@@ -2,8 +2,6 @@
 
 module Main where
 
-import Control.Applicative ((<$>), (<*>))
-import Control.Monad (mzero)
 import Control.Exception (catch)
 import System.IO (stderr, hPutStrLn, hPrint)
 import qualified Data.ByteString.Lazy as BSL
@@ -11,49 +9,9 @@ import qualified Data.Foldable as F
 import Data.Aeson
 import Network.HTTP.Conduit
 import Text.Pandoc (def, readHtml, writeAsciiDoc)
-import Text.Pandoc.Options (ReaderOptions(..), WriterOptions(..))
-
-data HayooResult = HayooResult { resultUri         :: String
-                               , tag               :: String
-                               , resultPackage     :: String
-                               , resultName        :: String
-                               , resultSource      :: String
-                               , resultDescription :: String
-                               , resultSignature   :: String
-                               , resultModules     :: [String]
-                               , resultScore       :: Float
-                               , resultType        :: String
-                               } deriving (Show)
-
-data HayooResponse = HayooResponse { max    :: Int
-                                   , offset :: Int
-                                   , count  :: Int
-                                   , result :: [HayooResult]
-                                   } deriving (Show)
-
-instance FromJSON HayooResult where
-    parseJSON (Object v) = HayooResult
-                           <$> v .: "resultUri"
-                           <*> v .: "tag"
-                           <*> v .: "resultPackage"
-                           <*> v .: "resultName"
-                           <*> v .: "resultSource"
-                           <*> v .: "resultDescription"
-                           <*> v .: "resultSignature"
-                           <*> v .: "resultModules"
-                           <*> v .: "resultScore"
-                           <*> v .: "resultType"
-
-    parseJSON _          = mzero
-
-instance FromJSON HayooResponse where
-    parseJSON (Object v) = HayooResponse
-                           <$> v .: "max"
-                           <*> v .: "offset"
-                           <*> v .: "count"
-                           <*> v .: "result"
-
-    parseJSON _          = mzero
+import Text.Pandoc.Options (WriterOptions(..))
+import CliOptions
+import HayooTypes
 
 statusExceptionHandler ::  HttpException -> IO BSL.ByteString
 statusExceptionHandler (StatusCodeException status _ _) =
@@ -65,20 +23,40 @@ statusExceptionHandler exception =
     >> hPrint stderr exception
     >> return BSL.empty
 
-jsonData :: IO BSL.ByteString
-jsonData = simpleHttp "http://hayoo.fh-wedel.de/json?query=Monad" `catch` statusExceptionHandler
+jsonData :: Opts -> IO BSL.ByteString
+jsonData (Opts _ sQuery) = simpleHttp url `catch` statusExceptionHandler
+                           where url = "http://hayoo.fh-wedel.de/json?query=" ++ sQuery
 
 decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
 decodeHayooResponse = decode
 
+printDelimiter :: Char -> IO ()
+printDelimiter = putStrLn . replicate 100
+
 htmlToAscii :: String -> String
 htmlToAscii = (writeAsciiDoc def {writerReferenceLinks = True}) . readHtml def
 
-printResult :: HayooResult -> IO ()
-printResult (HayooResult _ _ _ _ _ desc _ _ _ _) = putStrLn $ htmlToAscii desc
+printResultFull :: HayooResult -> IO ()
+printResultFull singleResult@(HayooResult _ _ _ _ _ desc _ _ _ _) =
+    putStrLn ""
+    >> printResultShort singleResult
+    >> printDelimiter '-'
+    >> (putStrLn $ htmlToAscii desc)
+    >> printDelimiter '='
 
-printResponse :: HayooResponse -> IO ()
-printResponse (HayooResponse _ _ _ results) = mapM_ printResult results
+printResultShort :: HayooResult -> IO ()
+printResultShort (HayooResult _ _ _ _ _ _ signature modules _ _) =
+    putStrLn $ unwords $ modules ++ [signature]
+
+printResponse :: Opts -> HayooResponse -> IO ()
+printResponse (Opts True _)  (HayooResponse _ _ _ results) = mapM_ printResultFull results
+printResponse (Opts False _) (HayooResponse _ _ _ results) = mapM_ printResultShort results
+
+run :: Opts -> IO ()
+run opts =
+    (jsonData opts)
+    >>= (return . decodeHayooResponse)
+    >>= (F.mapM_ $ printResponse opts)
 
 main :: IO ()
-main = (F.mapM_ printResponse) =<< (return . decodeHayooResponse) =<< jsonData
+main = parseArguments run
