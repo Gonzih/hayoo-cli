@@ -2,7 +2,7 @@
 --  see http://haskell.org/cabal/users-guide/
 
 name:                hayoo-cli
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Hayoo CLI
 description:         Simple console client for hayoo.
 homepage:            https://github.com/Gonzih/hayoo-cli
