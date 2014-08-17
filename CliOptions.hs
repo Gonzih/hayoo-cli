@@ -21,9 +21,9 @@ parser = Opts
        <> help "Show description")
     <*> argument str (metavar "QUERY")
 
-parseArguments :: (Opts -> IO ()) -> IO ()
-parseArguments = (execParser opts >>=)
+parseArguments :: String -> (Opts -> IO ()) -> IO ()
+parseArguments ver = (execParser opts >>=)
     where opts = info (helper <*> parser)
             ( fullDesc
            <> progDesc "Search for query using hayoo."
-           <> header   "hayoo - 0.1.0.0")
+           <> header   ("hayoo - " ++ ver))

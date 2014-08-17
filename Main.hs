@@ -2,7 +2,9 @@
 
 module Main where
 
+import Paths_hayoo_cli (version)
 import Control.Exception (catch)
+import Data.Version (showVersion)
 import System.IO (stderr, hPutStr, hPrint)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
@@ -63,4 +65,5 @@ run opts =
     >>= ((printResponse opts) . decodeHayooResponse)
 
 main :: IO ()
-main = parseArguments run
+main = parseArguments ver run
+       where ver = showVersion version
