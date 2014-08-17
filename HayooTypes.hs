@@ -12,7 +12,7 @@ import Data.Aeson
 
 data HayooResult = HayooResult { resultUri         :: String
                                , tag               :: String
-                               , resultPackage     :: String
+                               , resultPackage     :: Maybe String
                                , resultName        :: String
                                , resultSource      :: String
                                , resultDescription :: String

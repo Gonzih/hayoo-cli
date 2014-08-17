@@ -32,9 +32,8 @@ jsonData (Opts _ searchQuery) =
 
 decodeHayooResponse :: BSL.ByteString -> HayooResponse
 decodeHayooResponse bs = case eitherDecode bs of
-    (Right result) -> result
-    (Left err) -> error $ show err
-    
+    (Right res) -> res
+    (Left err)  -> error $ show err
 
 printDelimiter :: Char -> IO ()
 printDelimiter = putStrLn . replicate 100
