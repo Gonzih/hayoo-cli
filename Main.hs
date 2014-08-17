@@ -21,7 +21,7 @@ jsonData (Opts _ searchQuery) = do
     let req' = req { requestHeaders = [userAgentHeader] }
     response <- withManager $ httpLbs req'
     return $ responseBody response
-    where url             = "http://hayoo.fh-wedel.de/json?query       = " ++ encQuery
+    where url             = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
           encQuery        = encString True ok_url searchQuery
           userAgent       = pack $ "hayoo-cli/" ++ showVersion version
           userAgentHeader = (hUserAgent, userAgent)
