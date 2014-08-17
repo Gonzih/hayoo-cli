@@ -25,5 +25,6 @@ executable hayoo
                      , http-conduit >=2.0 && <2.1
                      , bytestring >=0.10 && <0.11
                      , optparse-applicative >= 0.9
+                     , url >= 2.1
   -- hs-source-dirs:
   default-language:    Haskell2010

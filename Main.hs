@@ -8,6 +8,7 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Foldable as F
 import Data.Aeson
 import Network.HTTP.Conduit
+import Network.URL (encString, ok_url)
 import Text.Pandoc (def, readHtml, writeAsciiDoc)
 import Text.Pandoc.Options (WriterOptions(..))
 import CliOptions
@@ -25,7 +26,7 @@ statusExceptionHandler exception =
 
 jsonData :: Opts -> IO BSL.ByteString
 jsonData (Opts _ sQuery) = simpleHttp url `catch` statusExceptionHandler
-                           where url = "http://hayoo.fh-wedel.de/json?query=" ++ sQuery
+                           where url = "http://hayoo.fh-wedel.de/json?query=" ++ encString True ok_url sQuery
 
 decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
 decodeHayooResponse = decode
