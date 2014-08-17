@@ -12,7 +12,7 @@ import Data.Aeson
 
 data HayooResult = HayooResult { resultUri         :: String
                                , tag               :: String
-                               , resultPackage     :: Maybe String
+                               , resultPackage     :: String
                                , resultName        :: String
                                , resultSource      :: String
                                , resultDescription :: String
@@ -30,16 +30,16 @@ data HayooResponse = HayooResponse { max    :: Int
 
 instance FromJSON HayooResult where
     parseJSON (Object v) = HayooResult
-                           <$> v .: "resultUri"
-                           <*> v .: "tag"
-                           <*> v .: "resultPackage"
-                           <*> v .: "resultName"
-                           <*> v .: "resultSource"
-                           <*> v .: "resultDescription"
-                           <*> v .: "resultSignature"
-                           <*> v .: "resultModules"
-                           <*> v .: "resultScore"
-                           <*> v .: "resultType"
+                           <$> v .:  "resultUri"
+                           <*> v .:  "tag"
+                           <*> v .:? "resultPackage"     .!= ""
+                           <*> v .:  "resultName"
+                           <*> v .:? "resultSource"      .!= ""
+                           <*> v .:? "resultDescription" .!= ""
+                           <*> v .:? "resultSignature"   .!= ""
+                           <*> v .:? "resultModules"     .!= []
+                           <*> v .:  "resultScore"
+                           <*> v .:  "resultType"
 
     parseJSON _          = mzero
 
