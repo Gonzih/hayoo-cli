@@ -3,10 +3,8 @@
 module Main where
 
 import Paths_hayoo_cli (version)
-import Control.Exception (catch)
 import Data.Version (showVersion)
 import Data.ByteString.Char8 (pack)
-import System.IO (stderr, hPutStr, hPrint)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Network.HTTP.Conduit
