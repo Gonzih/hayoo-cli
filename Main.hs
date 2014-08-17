@@ -52,9 +52,9 @@ printResultShort (HayooResult _ _ _ name _ _ signature modules _ _) =
           nameAndSignaruter n s  = [n, "::", s]
 
 printResponse :: Opts -> HayooResponse -> IO ()
+printResponse (Opts _ _)     (HayooResponse _ _ _ [])      = putStrLn "No results found"
 printResponse (Opts True _)  (HayooResponse _ _ _ (res:_)) = printResultFull res
 printResponse (Opts False _) (HayooResponse _ _ _ results) = mapM_ printResultShort results
-printResponse (Opts _ _)     (HayooResponse _ _ _ [])      = putStrLn "No results found"
 
 run :: Opts -> IO ()
 run opts =
