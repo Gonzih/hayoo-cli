@@ -19,7 +19,7 @@ executable hayoo
   main-is:             Main.hs
   -- other-modules:
   other-extensions:    OverloadedStrings
-  build-depends:       base >=4.6 && <4.7
+  build-depends:       base >=4.6 && <4.8
                      , pandoc >= 1.12
                      , aeson >= 0.7
                      , http-conduit >=2.0 && <2.1
