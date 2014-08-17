@@ -30,8 +30,11 @@ jsonData (Opts _ searchQuery) =
     where url      = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
           encQuery = encString True ok_url searchQuery
 
-decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
-decodeHayooResponse = decode
+decodeHayooResponse :: BSL.ByteString -> HayooResponse
+decodeHayooResponse bs = case eitherDecode bs of
+    (Right result) -> result
+    (Left err) -> error $ show err
+    
 
 printDelimiter :: Char -> IO ()
 printDelimiter = putStrLn . replicate 100
@@ -59,8 +62,7 @@ printResponse (Opts False _) (HayooResponse _ _ _ results) = mapM_ printResultSh
 run :: Opts -> IO ()
 run opts =
     (jsonData opts)
-    >>= (return . decodeHayooResponse)
-    >>= (F.mapM_ $ printResponse opts)
+    >>= ((printResponse opts) . decodeHayooResponse)
 
 main :: IO ()
 main = parseArguments run
