@@ -25,8 +25,10 @@ statusExceptionHandler exception =
     >> return BSL.empty
 
 jsonData :: Opts -> IO BSL.ByteString
-jsonData (Opts _ sQuery) = simpleHttp url `catch` statusExceptionHandler
-                           where url = "http://hayoo.fh-wedel.de/json?query=" ++ encString True ok_url sQuery
+jsonData (Opts _ searchQuery) =
+    simpleHttp url `catch` statusExceptionHandler
+    where url   = "http://hayoo.fh-wedel.de/json?query = " ++ encQuery
+          encQuery = encString True ok_url searchQuery
 
 decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
 decodeHayooResponse = decode
