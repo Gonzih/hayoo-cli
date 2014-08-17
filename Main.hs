@@ -5,7 +5,6 @@ module Main where
 import Control.Exception (catch)
 import System.IO (stderr, hPutStr, hPrint)
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.Foldable as F
 import Data.Aeson
 import Network.HTTP.Conduit
 import Network.URL (encString, ok_url)
