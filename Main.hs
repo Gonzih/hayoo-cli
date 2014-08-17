@@ -3,7 +3,7 @@
 module Main where
 
 import Control.Exception (catch)
-import System.IO (stderr, hPutStrLn, hPrint)
+import System.IO (stderr, hPutStr, hPrint)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Foldable as F
 import Data.Aeson
@@ -16,18 +16,18 @@ import HayooTypes
 
 statusExceptionHandler ::  HttpException -> IO BSL.ByteString
 statusExceptionHandler (StatusCodeException status _ _) =
-    hPutStrLn stderr "An error occured during download: "
+    hPutStr stderr "An error occured: "
     >> hPrint stderr status
     >> return BSL.empty
 statusExceptionHandler exception =
-    hPutStrLn stderr "An error occured during download: "
+    hPutStr stderr "An error occured: "
     >> hPrint stderr exception
     >> return BSL.empty
 
 jsonData :: Opts -> IO BSL.ByteString
 jsonData (Opts _ searchQuery) =
     simpleHttp url `catch` statusExceptionHandler
-    where url   = "http://hayoo.fh-wedel.de/json?query = " ++ encQuery
+    where url      = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
           encQuery = encString True ok_url searchQuery
 
 decodeHayooResponse :: BSL.ByteString -> Maybe HayooResponse
