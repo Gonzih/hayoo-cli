@@ -5,31 +5,28 @@ module Main where
 import Paths_hayoo_cli (version)
 import Control.Exception (catch)
 import Data.Version (showVersion)
+import Data.ByteString.Char8 (pack)
 import System.IO (stderr, hPutStr, hPrint)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Network.HTTP.Conduit
+import Network.HTTP.Types.Header (hUserAgent)
 import Network.URL (encString, ok_url)
 import Text.Pandoc (def, readHtml, writeAsciiDoc)
 import Text.Pandoc.Options (WriterOptions(..))
 import CliOptions
 import HayooTypes
 
-statusExceptionHandler ::  HttpException -> IO BSL.ByteString
-statusExceptionHandler (StatusCodeException status _ _) =
-    hPutStr stderr "An error occured: "
-    >> hPrint stderr status
-    >> return BSL.empty
-statusExceptionHandler exception =
-    hPutStr stderr "An error occured: "
-    >> hPrint stderr exception
-    >> return BSL.empty
-
 jsonData :: Opts -> IO BSL.ByteString
-jsonData (Opts _ searchQuery) =
-    simpleHttp url `catch` statusExceptionHandler
-    where url      = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
-          encQuery = encString True ok_url searchQuery
+jsonData (Opts _ searchQuery) = do
+    req <- parseUrl url
+    let req' = req { requestHeaders = [userAgentHeader] }
+    response <- withManager $ httpLbs req'
+    return $ responseBody response
+    where url             = "http://hayoo.fh-wedel.de/json?query       = " ++ encQuery
+          encQuery        = encString True ok_url searchQuery
+          userAgent       = pack $ "hayoo-cli/" ++ showVersion version
+          userAgentHeader = (hUserAgent, userAgent)
 
 decodeHayooResponse :: BSL.ByteString -> HayooResponse
 decodeHayooResponse bs = case eitherDecode bs of
