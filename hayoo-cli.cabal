@@ -4,7 +4,7 @@
 name:                hayoo-cli
 version:             0.1.0.0
 synopsis:            Hayoo CLI
--- description:
+description:         Simple console client for hayoo.
 license:             MIT
 license-file:        LICENSE
 author:              Max Gonzih
