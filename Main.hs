@@ -54,9 +54,9 @@ printResultShort (HayooResult { resultName      = name
           nameAndSignaruter n s  = [n, "::", s]
 
 printResponse :: Opts -> HayooResponse -> IO ()
-printResponse (Opts _ _)     (HayooResponse { result = [] })      = putStrLn "No results found"
-printResponse (Opts True _)  (HayooResponse { result = (res:_) }) = printResultFull res
-printResponse (Opts False _) (HayooResponse { result = results }) = mapM_ printResultShort results
+printResponse _                           (HayooResponse { result = [] })      = putStrLn "No results found"
+printResponse (Opts { showInfo = True })  (HayooResponse { result = (res:_) }) = printResultFull res
+printResponse (Opts { showInfo = False }) (HayooResponse { result = results }) = mapM_ printResultShort results
 
 run :: Opts -> IO ()
 run opts =
