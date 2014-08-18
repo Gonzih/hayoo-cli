@@ -39,21 +39,24 @@ htmlToAscii :: String -> String
 htmlToAscii = (writeAsciiDoc def {writerReferenceLinks = True}) . readHtml def
 
 printResultFull :: HayooResult -> IO ()
-printResultFull singleResult@(HayooResult _ _ _ _ _ desc _ _ _ _) =
+printResultFull singleResult@(HayooResult { resultDescription = desc }) =
     printResultShort singleResult
     >> putStrLn ""
     >> (putStrLn $ htmlToAscii desc)
 
 printResultShort :: HayooResult -> IO ()
-printResultShort (HayooResult _ _ _ name _ _ signature modules _ _) =
+printResultShort (HayooResult { resultName      = name
+                              , resultSignature = signature
+                              , resultModules   = modules
+                              }) =
     putStrLn $ unwords $ modules ++ nameAndSignaruter name signature
     where nameAndSignaruter n "" = [n]
           nameAndSignaruter n s  = [n, "::", s]
 
 printResponse :: Opts -> HayooResponse -> IO ()
-printResponse (Opts _ _)     (HayooResponse _ _ _ [])      = putStrLn "No results found"
-printResponse (Opts True _)  (HayooResponse _ _ _ (res:_)) = printResultFull res
-printResponse (Opts False _) (HayooResponse _ _ _ results) = mapM_ printResultShort results
+printResponse (Opts _ _)     (HayooResponse { result = [] })      = putStrLn "No results found"
+printResponse (Opts True _)  (HayooResponse { result = (res:_) }) = printResultFull res
+printResponse (Opts False _) (HayooResponse { result = results }) = mapM_ printResultShort results
 
 run :: Opts -> IO ()
 run opts =
