@@ -49,9 +49,9 @@ printResultShort (HayooResult { resultName      = name
                               , resultSignature = signature
                               , resultModules   = modules
                               }) =
-    putStrLn $ unwords $ modules ++ nameAndSignaruter name signature
-    where nameAndSignaruter n "" = [n]
-          nameAndSignaruter n s  = [n, "::", s]
+    putStrLn $ unwords $ modules ++ nameAndSignarute name signature
+    where nameAndSignarute n "" = [n]
+          nameAndSignarute n s  = [n, "::", s]
 
 printResponse :: Opts -> HayooResponse -> IO ()
 printResponse _                           (HayooResponse { result = [] })      = putStrLn "No results found"
