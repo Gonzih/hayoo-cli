@@ -8,7 +8,7 @@ import Data.ByteString.Char8 (pack)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Network.HTTP.Conduit
-import Network.HTTP.Types.Header (hUserAgent)
+import Network.HTTP.Types.Header (hUserAgent, hAccept)
 import Network.URL (encString, ok_url)
 import Text.Pandoc (def, readHtml, writeAsciiDoc)
 import Text.Pandoc.Options (WriterOptions(..))
@@ -18,13 +18,14 @@ import HayooTypes
 jsonData :: Opts -> IO BSL.ByteString
 jsonData (Opts _ searchQuery) = do
     req <- parseUrl url
-    let req' = req { requestHeaders = [userAgentHeader] }
+    let req' = req { requestHeaders = [acceptJSONHeader, userAgentHeader] }
     response <- withManager $ httpLbs req'
     return $ responseBody response
-    where url             = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
-          encQuery        = encString True ok_url searchQuery
-          userAgent       = pack $ "hayoo-cli/" ++ showVersion version
-          userAgentHeader = (hUserAgent, userAgent)
+    where url              = "http://hayoo.fh-wedel.de/json?query=" ++ encQuery
+          encQuery         = encString True ok_url searchQuery
+          userAgent        = pack $ "hayoo-cli/" ++ showVersion version
+          userAgentHeader  = (hUserAgent, userAgent)
+          acceptJSONHeader = (hAccept, "application/json")
 
 decodeHayooResponse :: BSL.ByteString -> HayooResponse
 decodeHayooResponse bs = case eitherDecode bs of
