@@ -4,6 +4,7 @@ module Main where
 
 import Paths_hayoo_cli (version)
 import Data.Version (showVersion)
+import Data.Either (either)
 import Data.ByteString.Char8 (pack)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
@@ -28,9 +29,7 @@ jsonData (Opts _ searchQuery) = do
           acceptJSONHeader = (hAccept, "application/json")
 
 decodeHayooResponse :: BSL.ByteString -> HayooResponse
-decodeHayooResponse bs = case eitherDecode bs of
-    (Right res) -> res
-    (Left err)  -> error $ show err
+decodeHayooResponse = either (error . show) id . eitherDecode
 
 printDelimiter :: Char -> IO ()
 printDelimiter = putStrLn . replicate 100
