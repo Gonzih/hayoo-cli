@@ -3,6 +3,7 @@ deps:
 	cabal sandbox init
 	cabal update
 	cabal install --only-dependencies
+	cabal configure
 build: deps
 	cabal build
 docker-image:
