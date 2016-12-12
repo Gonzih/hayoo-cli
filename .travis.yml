@@ -2,8 +2,5 @@ language: sh
 sudo: required
 services:
   - docker
-before_install:
-  - make docker-image
-
 script:
   - make ci
