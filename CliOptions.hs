@@ -6,6 +6,7 @@ module CliOptions
 )
 where
 
+import Data.Monoid
 import Options.Applicative
 
 data Opts = Opts
